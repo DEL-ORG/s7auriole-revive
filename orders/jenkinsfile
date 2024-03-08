@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+    tools {
+        jdk 'java17'
+        maven 'maven3'
+    }
+    
+    stages {
+        stage("Cleanup Workspace") {
+            steps {
+                echo "clena up is over"
+            }
+        }
+
+        stage("Checkout from SCM") {
+            steps {
+                git branch: 'revive-code', credentialsId: 'github', url: 'https://github.com/DEL-ORG/s7auriole-revive.git'
+                sh "cd oders"
+            }
+        }
+
+        stage("Build Application") {
+            steps {
+                sh "mvn clean package" // means install the package
+            }
+        }
+
+        stage("Test Application") {
+            steps {
+                sh "mvn test"
+            }
+        }
+    }
+}
+
