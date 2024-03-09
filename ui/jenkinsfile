@@ -9,7 +9,8 @@ pipeline {
     stages {
         stage("Cleanup Workspace") {
             steps {
-            cleanWs()
+           // cleanWs()  if not work try this 
+              deleteDir()
             }
         }
 
