@@ -15,7 +15,7 @@ pipeline {
         stage("Checkout from SCM") {
             steps {
                 //git branch: 'revive-code', credentialsId: 'github', url: 'https://github.com/DEL-ORG/s7auriole-revive.git'
-                sh "git switch revive-code, credentialsId: 'github', url: 'https://github.com/DEL-ORG/s7auriole-revive.git'
+                sh "git switch revive-code, credentialsId: 'github', url: 'https://github.com/DEL-ORG/s7auriole-revive.git'"
                 sh "cd ui"
             }
         }
