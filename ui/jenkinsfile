@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage("Cleanup Workspace") {
             steps {
-                echo "cleanup is over"
+            cleanWs()
             }
         }
 
@@ -17,7 +17,7 @@ pipeline {
             steps {
                 script {
                     // Check out the repository and switch to the desired branch
-                    checkout([$class: 'GitSCM', branches: [[name: '*/revive-code']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/DEL-ORG/s7auriole-revive.git']]])
+                    checkout([$class: 'GitSCM', branches: [[name: '*/revive-code']], userRemoteConfigs: [[url: 'https://github.com/DEL-ORG/s7auriole-revive.git']]])
                 }
             }
         }
