@@ -1,36 +1,49 @@
 pipeline {
     agent any
+
     tools {
         jdk 'java17'
         maven 'maven3'
     }
-    
+
     stages {
         stage("Cleanup Workspace") {
             steps {
-                echo "clena up is over"
+                echo "cleanup is over"
             }
         }
 
         stage("Checkout from SCM") {
             steps {
-                //git branch: 'revive-code', credentialsId: 'github', url: 'https://github.com/DEL-ORG/s7auriole-revive.git'
-                sh "git switch revive-code, credentialsId: 'github', url: 'https://github.com/DEL-ORG/s7auriole-revive.git'"
-                sh "cd ui"
+                script {
+                    // Check out the repository and switch to the desired branch
+                    checkout([$class: 'GitSCM', branches: [[name: '*/revive-code']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/DEL-ORG/s7auriole-revive.git']]])
+                }
             }
         }
 
         stage("Build Application") {
             steps {
-                sh "mvn clean package" // means install the package
+                script {
+                    // Navigate to the correct directory and run Maven build
+                    dir('ui') {
+                        sh 'mvn clean package'
+                    }
+                }
             }
         }
 
         stage("Test Application") {
             steps {
-                sh "mvn test"
+                script {
+                    // Navigate to the correct directory and run Maven tests
+                    dir('ui') {
+                        sh 'mvn test'
+                    }
+                }
             }
         }
     }
 }
+
 
