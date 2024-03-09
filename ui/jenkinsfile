@@ -19,6 +19,7 @@ pipeline {
                 script {
                     // Check out the repository and switch to the desired branch
                     checkout([$class: 'GitSCM', branches: [[name: '*/revive-code']], userRemoteConfigs: [[url: 'https://github.com/DEL-ORG/s7auriole-revive.git']]])
+                    // or  git branch: 'revive-code', credentialsId: 'github', url: 'https://github.com/DEL-ORG/s7auriole-revive.git'
                 }
             }
         }
@@ -40,6 +41,16 @@ pipeline {
                     // Navigate to the correct directory and run Maven tests
                     dir('ui') {
                         sh 'mvn test'
+                    }
+                }
+            }
+        }
+        stage("SonarQube Analysis"){
+            steps {
+                script{
+                    withSonarQubeEnv(credentialsId: 'sonarqube') {
+                         sh "mvn sonar:sonar"
+
                     }
                 }
             }
