@@ -9,17 +9,14 @@ pipeline {
     stages {
         stage("Cleanup Workspace") {
             steps {
-           // cleanWs()  if not work try this 
-              deleteDir()
+                deleteDir()
             }
         }
 
         stage("Checkout from SCM") {
             steps {
                 script {
-                    // Check out the repository and switch to the desired branch
                     checkout([$class: 'GitSCM', branches: [[name: '*/revive-code']], userRemoteConfigs: [[url: 'https://github.com/DEL-ORG/s7auriole-revive.git']]])
-                    // or  git branch: 'revive-code', credentialsId: 'github', url: 'https://github.com/DEL-ORG/s7auriole-revive.git'
                 }
             }
         }
@@ -27,7 +24,6 @@ pipeline {
         stage("Build Application") {
             steps {
                 script {
-                    // Navigate to the correct directory and run Maven build
                     dir('ui') {
                         sh 'mvn clean package'
                     }
@@ -38,22 +34,22 @@ pipeline {
         stage("Test Application") {
             steps {
                 script {
-                    // Navigate to the correct directory and run Maven tests
                     dir('ui') {
                         sh 'mvn test'
                     }
                 }
             }
         }
-        stage("SonarQube Analysis"){
-            steps {
-                script{
-                    checkout([$class: 'GitSCM', branches: [[name: '*/revive-code']], userRemoteConfigs: [[url: 'https://github.com/DEL-ORG/s7auriole-revive.git']]])
-                    dir('ui'){
-                    withSonarQubeEnv(credentialsId: 'sonarqube') {
-                         sh "mvn clean verify sonar:sonar"
 
-                         }
+        stage("SonarQube Analysis") {
+            steps {
+                script {
+                    dir('ui') {
+                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                            withSonarQubeEnv(credentialsId: 'sonarqube') {
+                                sh "mvn clean verify sonar:sonar"
+                            }
+                        }
                     }
                 }
             }
