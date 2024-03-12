@@ -1,5 +1,5 @@
 pipeline {
-     agent any
+    agent any
 
     tools {
         jdk 'java17'
@@ -33,9 +33,7 @@ pipeline {
         stage("Build Application") {
             steps {
                 script {
-                    dir('test') {
-                        sh 'mvn clean package'
-                    }
+                    sh 'mvn clean package'
                 }
             }
         }
@@ -43,9 +41,7 @@ pipeline {
         stage("Test Application") {
             steps {
                 script {
-                    dir('test') {
-                        sh 'mvn test'
-                    }
+                    sh 'mvn test'
                 }
             }
         }
@@ -53,11 +49,9 @@ pipeline {
         stage("SonarQube Analysis") {
             steps {
                 script {
-                    dir('test') {
-                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                            withSonarQubeEnv(credentialsId: 'sonarqube') {
-                                sh "mvn clean verify sonar:sonar"
-                            }
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                        withSonarQubeEnv(credentialsId: 'sonarqube') {
+                            sh "mvn clean verify sonar:sonar"
                         }
                     }
                 }
