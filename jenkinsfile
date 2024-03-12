@@ -11,14 +11,14 @@ pipeline {
         RELEASE = "1.0.0"
         DOCKER_USER = "attamegnon/attamegnon2022"
         DOCKER_PASS = 'docker-hub'  // credential id for docker-hub we just created 
-        IMAGE_NAME = "${DOCKER_USER}:${APP_NAME}"       // IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}
+        IMAGE_NAME = "${DOCKER_USER}:${APP_NAME}"       // IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
         IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
     }
 
     stages {
         stage("Cleanup Workspace") {
             steps {
-    //            deleteDir()
+                //deleteDir()
             }
         }
 
@@ -33,9 +33,9 @@ pipeline {
         stage("Build Application") {
             steps {
                 script {
-     //               dir('ui') {
-                        sh 'mvn clean package'
-                    }
+                    //dir('ui') {
+                    sh 'mvn clean package'
+                    //}
                 }
             }
         }
@@ -43,9 +43,9 @@ pipeline {
         stage("Test Application") {
             steps {
                 script {
- //                   dir('ui') {
-                        sh 'mvn test'
-                    }
+                    //dir('ui') {
+                    sh 'mvn test'
+                    //}
                 }
             }
         }
@@ -53,24 +53,23 @@ pipeline {
         stage("SonarQube Analysis") {
             steps {
                 script {
- //                   dir('ui') {
-                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                            withSonarQubeEnv(credentialsId: 'sonarqube') {
-                                sh "mvn clean verify sonar:sonar"
-                            }
+                    //dir('ui') {
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                        withSonarQubeEnv(credentialsId: 'sonarqube') {
+                            sh "mvn clean verify sonar:sonar"
                         }
                     }
                 }
             }
-//        }
+        }
 
-     //   stage("Quality Gate") {
-    //        steps {
-    //            script {
-   //                 waitForQualityGate abortPipeline: false, credentialsId: 'sonarqube'
-  //              }
- //           }
-//       }
+        // stage("Quality Gate") {
+        //     steps {
+        //         script {
+        //             waitForQualityGate abortPipeline: false, credentialsId: 'sonarqube'
+        //         }
+        //     }
+        // }
 
         stage("Build & Push Docker Image") {
             steps {
@@ -88,7 +87,9 @@ pipeline {
                 }
             }
         }
+    }
 }
+
 
 
 
