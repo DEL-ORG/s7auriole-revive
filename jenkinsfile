@@ -9,14 +9,14 @@ pipeline {
     stages {
         stage("Cleanup Workspace") {
             steps {
-                deleteDir()
+                cleanWs()
             }
         }
 
         stage("Checkout from SCM") {
             steps {
                 script {
-                    checkout([$class: 'GitSCM', branches: [[name: '*/revive-code']], userRemoteConfigs: [[url: 'https://github.com/DEL-ORG/s7auriole-revive.git']]])
+                    checkout([$class: 'GitSCM', branches: [[name: '*/test']], userRemoteConfigs: [[url: 'https://github.com/DEL-ORG/s7auriole-revive.git']]])
                 }
             }
         }
@@ -24,27 +24,22 @@ pipeline {
         stage("Build Application") {
             steps {
                 script {
-                    dir('ui') {
                         sh 'mvn clean package'
                     }
                 }
             }
-        }
 
         stage("Test Application") {
             steps {
                 script {
-                    dir('ui') {
                         sh 'mvn test'
                     }
                 }
             }
-        }
 
         stage("SonarQube Analysis") {
             steps {
                 script {
-                    dir('ui') {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                             withSonarQubeEnv(credentialsId: 'sonarqube') {
                                 sh "mvn clean verify sonar:sonar"
@@ -53,7 +48,6 @@ pipeline {
                     }
                 }
             }
-        }
 
         stage("Quality Gate") {
             steps {
