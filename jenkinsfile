@@ -6,17 +6,26 @@ pipeline {
         maven 'maven3'
     }
 
+    environment {
+        APP_NAME = "ui"
+        RELEASE = "1.0.0"
+        DOCKER_USER = "attamegnon/attamegnon2022"
+        DOCKER_PASS = 'docker-hub'  // credential id for docker-hub we just created 
+        IMAGE_NAME = "${DOCKER_USER}:${APP_NAME}"       // IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}
+        IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
+    }
+
     stages {
         stage("Cleanup Workspace") {
             steps {
-                 deleteDir()
+                deleteDir()
             }
         }
 
         stage("Checkout from SCM") {
             steps {
                 script {
-                    checkout([$class: 'GitSCM', branches: [[name: '*/test']], userRemoteConfigs: [[url: 'https://github.com/DEL-ORG/s7auriole-revive.git']]])
+                    checkout([$class: 'GitSCM', branches: [[name: '*/revive-code']], userRemoteConfigs: [[url: 'https://github.com/DEL-ORG/s7auriole-revive.git']]])
                 }
             }
         }
@@ -24,22 +33,27 @@ pipeline {
         stage("Build Application") {
             steps {
                 script {
+                    dir('ui') {
                         sh 'mvn clean package'
                     }
                 }
             }
+        }
 
         stage("Test Application") {
             steps {
                 script {
+                    dir('ui') {
                         sh 'mvn test'
                     }
                 }
             }
+        }
 
         stage("SonarQube Analysis") {
             steps {
                 script {
+                    dir('ui') {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                             withSonarQubeEnv(credentialsId: 'sonarqube') {
                                 sh "mvn clean verify sonar:sonar"
@@ -48,11 +62,29 @@ pipeline {
                     }
                 }
             }
+        }
 
-        stage("Quality Gate") {
+     //   stage("Quality Gate") {
+    //        steps {
+    //            script {
+   //                 waitForQualityGate abortPipeline: false, credentialsId: 'sonarqube'
+  //              }
+ //           }
+//       }
+
+        stage("Build & Push Docker Image") {
             steps {
                 script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'sonarqube'
+                    // Build Docker image
+                    docker.withRegistry('', DOCKER_PASS) {
+                        docker_image = docker.build "${IMAGE_NAME}"
+                    }
+
+                    // Push Docker image with tags
+                    docker.withRegistry('', DOCKER_PASS) {
+                        docker_image.push("${IMAGE_TAG}")
+                        docker_image.push('latest')
+                    }
                 }
             }
         }
