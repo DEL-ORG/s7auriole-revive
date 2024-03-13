@@ -25,7 +25,7 @@ pipeline {
         stage("Checkout from SCM") {
             steps {
                 script {
-                    checkout([$class: 'GitSCM', branches: [[name: '*/revive-code']], userRemoteConfigs: [[url: 'https://github.com/DEL-ORG/s7auriole-revive.git']]])
+                    checkout([$class: 'GitSCM', branches: [[name: '*/test']], userRemoteConfigs: [[url: 'https://github.com/DEL-ORG/s7auriole-revive.git']]])
                 }
             }
         }
