@@ -61,10 +61,6 @@ pipeline {
         stage("Build & Push Docker Image") {
             steps {
                 script {
-                    // Add Docker to PATH
-                    def dockerHome = tool 'Docker'
-                    env.PATH = "${dockerHome}/bin:${env.PATH}"
-
                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                         // Build Docker image
                         docker.withRegistry('', DOCKER_PASS) {
