@@ -58,31 +58,27 @@ pipeline {
             }
         }
 
-//        stage("Quality Gate") {
-//            steps {
-//                script {
-//                    waitForQualityGate abortPipeline: false, credentialsId: 'sonarqube'   // sornarqube is the credentials id in jenkins we set up
-//                }
-//            }
-//        }
-
         stage("Build & Push Docker Image") {
             steps {
                 script {
+                    // Add Docker to PATH
+                    def dockerHome = tool 'Docker'
+                    env.PATH = "${dockerHome}/bin:${env.PATH}"
+
                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    // Build Docker image
-                    docker.withRegistry('', DOCKER_PASS) {
-                        docker_image = docker.build "${IMAGE_NAME}"
-                    }
-                    }
-                    // Push Docker image with tags
-                    docker.withRegistry('', DOCKER_PASS) {
-                        docker_image.push("${IMAGE_TAG}")
-                        docker_image.push('latest')
+                        // Build Docker image
+                        docker.withRegistry('', DOCKER_PASS) {
+                            docker_image = docker.build "${IMAGE_NAME}"
+                        }
+
+                        // Push Docker image with tags
+                        docker.withRegistry('', DOCKER_PASS) {
+                            docker_image.push("${IMAGE_TAG}")
+                            docker_image.push('latest')
+                        }
                     }
                 }
             }
         }
     }
 }
-
