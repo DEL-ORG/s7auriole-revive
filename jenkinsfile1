@@ -8,11 +8,11 @@ pipeline {
 
     environment {
         APP_NAME = "test"
-        RELEASE = "1.0.0"
+        RELEASE = "R_1.0.0"
         DOCKER_USER = "attamegnon/attamegnon2022"
         DOCKER_PASS = 'docker-hub'  // credential id for docker-hub we just created 
         IMAGE_NAME = "${DOCKER_USER}:${APP_NAME}"
-        IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
+        IMAGE_TAG = "${RELEASE}-B_${BUILD_NUMBER}"
     }
 
     stages {
