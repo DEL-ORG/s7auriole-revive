@@ -33,9 +33,9 @@ pipeline {
         stage("Build Application") {
             steps {
                 script {
-                    dir('ui') {
+                   
                         sh 'mvn clean package'
-                    }
+                    
                 }
             }
         }
