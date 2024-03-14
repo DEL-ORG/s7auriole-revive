@@ -83,7 +83,7 @@ pipeline {
                     // Push Docker image with tags
                     docker.withRegistry('', DOCKER_PASS) {
                         docker_image.push("${APP_NAME}-${IMAGE_TAG}")
-                        docker rmi -f $DOCKER_USER:$APP_NAME
+                        doccker_image.remove()
                     }
                 }
             }
