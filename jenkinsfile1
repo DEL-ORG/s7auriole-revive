@@ -60,12 +60,14 @@ pipeline {
                 script {
                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                         // Build Docker image
-                        docker.build("attamegnon/attamegnon2022:${TAG}_v0.0${env.BUILD_NUMBER}", "-f ${TAG}/Dockerfile .")
-                        
-                        // Push Docker image
-                        docker.withRegistry(DOCKER_REGISTRY, DOCKERHUB_CREDENTIALS) {
-                            echo "Pushing image with TAG ${TAG}_v0.0${env.BUILD_NUMBER} to DockerHub"
-                            docker.image("attamegnon/attamegnon2022:${TAG}_v0.0${env.BUILD_NUMBER}").push()
+                        docker.withServer('tcp://docker:2375') {
+                            def dockerImage = docker.build("attamegnon/attamegnon2022:${TAG}_v0.0${env.BUILD_NUMBER}", "-f ${TAG}/Dockerfile .")
+                            
+                            // Push Docker image
+                            docker.withRegistry(DOCKER_REGISTRY, DOCKERHUB_CREDENTIALS) {
+                                echo "Pushing image with TAG ${TAG}_v0.0${env.BUILD_NUMBER} to DockerHub"
+                                dockerImage.push()
+                            }
                         }
                     }
                 }
@@ -73,4 +75,5 @@ pipeline {
         }
     }
 }
+
 
