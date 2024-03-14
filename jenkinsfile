@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent {
+        Kubernetes
+    }
 
     tools {
         jdk 'java17'
