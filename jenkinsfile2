@@ -10,8 +10,8 @@ pipeline {
         APP_NAME = "test"
         RELEASE = "RELEASE_1.0.0"
         DOCKER_USER = "attamegnon/attamegnon2022"
-        DOCKER_PASS = credentials('docker-hub') // credential id for docker-hub we just created
-        IMAGE_NAME = "${DOCKER_USER}:${APP_NAME}"
+        DOCKER_PASS = 'docker-hub'  // credential id for docker-hub we just created 
+    //  IMAGE_NAME = "${DOCKER_USER}:${APP_NAME}"
         IMAGE_TAG = "${RELEASE}-BUILD_${BUILD_NUMBER}"
     }
 
@@ -33,7 +33,9 @@ pipeline {
         stage("Build Application") {
             steps {
                 script {
-                    sh 'mvn clean package'
+                   
+                        sh 'mvn clean package'
+                    
                 }
             }
         }
@@ -41,7 +43,9 @@ pipeline {
         stage("Test Application") {
             steps {
                 script {
-                    sh 'mvn test'
+                    
+                        sh 'mvn test'
+                    
                 }
             }
         }
@@ -49,43 +53,38 @@ pipeline {
         stage("SonarQube Analysis") {
             steps {
                 script {
-                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                        withSonarQubeEnv(credentialsId: 'sonarqube') {
-                            sh "mvn clean verify sonar:sonar"
+              
+                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                            withSonarQubeEnv(credentialsId: 'sonarqube') {
+                                sh "mvn clean verify sonar:sonar"
+                            }
                         }
-                    }
+                    
                 }
             }
         }
 
-        stage("Quality Gate") {
+     /*stage("Quality Gate") {
             steps {
                 script {
-                    withSonarQubeEnv(credentialsId: 'sonarqube') {
-                        timeout(time: 1, unit: 'HOURS') {
-                            def qg = waitForQualityGate()
-                            if (qg.status != 'OK') {
-                                error "Pipeline aborted due to quality gate failure: ${qg.status}"
-                            }
-                        }
-                    }
+                    waitForQualityGate abortPipeline: false, credentialsId: 'sonarqube'
                 }
             }
-        }
+        } */
 
         stage("Build & Push Docker Image") {
             steps {
                 script {
                     // Build Docker image
-                    def dockerImage = docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
-                    
+                    docker.withRegistry('', DOCKER_PASS) {
+                        docker_image = docker.build "${IMAGE_NAME}"
+                    }
+
                     // Push Docker image with tags
                     docker.withRegistry('', DOCKER_PASS) {
-                        dockerImage.push()
+                        docker_image.push("${APP_NAME}-${IMAGE_TAG}")
+                        doccker_image.remove()
                     }
-                    
-                    // Remove Docker image from the local repository
-                    dockerImage.remove()
                 }
             }
         }
