@@ -12,7 +12,9 @@ pipeline {
         DOCKER_USER = "attamegnon/attamegnon2022"
         DOCKER_PASS = 'docker-hub' // credential id for docker-hub we just created
         IMAGE_TAG = "${RELEASE}-BUILD_${BUILD_NUMBER}"
-        IMAGE_NAME = "${DOCKER_USER}" + ":" + "${APP_NAME}_${IMAGE_TAG}"
+    //  IMAGE_NAME = "${DOCKER_USER}" + ":" + "${APP_NAME}_${IMAGE_TAG}"
+        IMAGE_NAME = ":" + "${APP_NAME}_${IMAGE_TAG}"
+    
     }
 
     stages {
