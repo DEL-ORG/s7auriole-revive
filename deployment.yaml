@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: register-app
-          image: attamegnon/attamegnon2022:test-RELEASE_1.0.0-BUILD_62RELEASE_1.0.0-BUILD_54
+          image: attamegnon/attamegnon2022:RELEASE_1.0.0-BUILD_63RELEASE_1.0.0-BUILD_62RELEASE_1.0.0-BUILD_54
           resources:
             limits:
               memory: "256Mi"
