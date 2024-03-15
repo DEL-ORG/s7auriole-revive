@@ -11,8 +11,8 @@ pipeline {
         }
         stage("Checkout from SCM") {
             steps {
- //               git branch: 'test-cd', credentialsId: 'git-hub', url: 'https://github.com/DEL-ORG/s7auriole-revive.git'
-                  checkout([$class: 'GitSCM', branches: [[name: '*/test-cd']], userRemoteConfigs: [[url: 'https://github.com/DEL-ORG/s7auriole-revive.git']]])
+                 git branch: 'test-cd', credentialsId: 'git-hub', url: 'https://github.com/DEL-ORG/s7auriole-revive.git'
+ //                checkout([$class: 'GitSCM', branches: [[name: '*/test-cd']], userRemoteConfigs: [[url: 'https://github.com/DEL-ORG/s7auriole-revive.git']]])
             }
         }
         stage("Update the Deployment Tags") {
@@ -29,7 +29,7 @@ pipeline {
                 sh """
                    git config --global user.name "s7testar"
                    git config --global user.email "attamegnon@gmail.com"
-                   git pull --all
+                   git pull --all https://github.com/DEL-ORG/s7auriole-revive.git test-cd
                    git add deployment.yaml
                    git commit -m "Updated Deployment Manifest"
                 """
