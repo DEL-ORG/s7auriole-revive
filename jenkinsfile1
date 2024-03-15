@@ -11,8 +11,8 @@ pipeline {
         RELEASE = "RELEASE_1.0.0"
         DOCKER_USER = "attamegnon/attamegnon2022"
         DOCKER_PASS = 'docker-hub' // credential id for docker-hub we just created
-        IMAGE_NAME = "${DOCKER_USER}" + ":" + "${APP_NAME}"
         IMAGE_TAG = "${RELEASE}-BUILD_${BUILD_NUMBER}"
+        IMAGE_NAME = "${DOCKER_USER}" + ":" + "${APP_NAME}_${IMAGE_TAG}"
     }
 
     stages {
@@ -79,13 +79,13 @@ pipeline {
                 script {
                     // Build Docker image
                     docker.withRegistry('', DOCKER_PASS) {
-                       docker_image = docker.build ("{$IMAGE_NAME}_{$IMAGE_TAG}")
+                       docker_image = docker.build "${IMAGE_NAME}
                           
                     }
 
                     // Push Docker image with tags
                     docker.withRegistry('', DOCKER_PASS) {
-                        docker_image.push ("{$IMAGE_NAME}_{$IMAGE_TAG}")
+                        docker_image.push("${IMAGE_NAME}")
                    }     
                 }
             }
