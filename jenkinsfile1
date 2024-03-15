@@ -13,6 +13,7 @@ pipeline {
         DOCKER_PASS = 'docker-hub' // credential id for docker-hub we just created
         IMAGE_TAG = "${RELEASE}-BUILD_${BUILD_NUMBER}"
         IMAGE_NAME = "${DOCKER_USER}" + ":" + "${APP_NAME}-${IMAGE_TAG}"
+        JENKINS_API_TOKEN = credentials("JENKINS_API_TOKEN")
        
     
     }
@@ -21,6 +22,7 @@ pipeline {
         stage("Cleanup Workspace") {
             steps {
                 deleteDir()
+            // cleanWs()   this did not work for me
             }
         }
 
@@ -109,7 +111,19 @@ pipeline {
                 sh "docker rmi -f ${IMAGE_NAME}"
                 sh "docker rmi -f aquasec/trivy:latest"
             }
-        }
+         }
        }
+
+        stage("Trigger CD Pipeline") {
+            steps {
+                script {
+                   sh "curl -v -k --user Administrator:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'localhost:8080/job/test-cd/buildWithParameters?token=git-hub'"
+ //   user: the user in your jenkins when you log in. ${JENKINS_API_TOKEN} need to generate that with same name in jenkins  IMAGE_TAG=${IMAGE_TAG}  IMAGE_TAG is the parameter you defined, ${IMAGE_TAG} is your tag for your image you define,  localhost:8080  your jenkins URL,  job/test-cd: job name you created.       
+                 
+ //                 sh "build job: 'test-cd', parameters: [string(name: 'IMAGE_TAG', value: "${IMAGE_TAG}")]"
+        
+            }  
+        }
     }
+  }
 }
