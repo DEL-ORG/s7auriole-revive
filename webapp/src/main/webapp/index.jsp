@@ -52,4 +52,9 @@
    <br>
    <h1> happy ending with Raissa and Liza. </h1>
    
+   <h1> Thank You so much for using this app </h1>
+   <br>
+   <h1> Happy Learning. See You Again. </h1>
+   <br>
+   
 </form>
