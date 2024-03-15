@@ -117,10 +117,10 @@ pipeline {
         stage("Trigger CD Pipeline") {
             steps {
                 script {
-                   sh "curl -v -k --user Administrator:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'localhost:8080/job/test-cd/buildWithParameters?token=git-hub'"
+   //                sh "curl -v -k --user Administrator:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'localhost:8080/job/test-cd/buildWithParameters?token=git-hub'"
  //   user: the user in your jenkins when you log in. ${JENKINS_API_TOKEN} need to generate that with same name in jenkins  IMAGE_TAG=${IMAGE_TAG}  IMAGE_TAG is the parameter you defined, ${IMAGE_TAG} is your tag for your image you define,  localhost:8080  your jenkins URL,  job/test-cd: job name you created.       
                  
- //                 sh "build job: 'test-cd', parameters: [string(name: 'IMAGE_TAG', value: "${IMAGE_TAG}")]"
+                 sh "build job: 'test-cd', parameters: [string(name: 'IMAGE_TAG', value: "${IMAGE_TAG}")]"
         
             }  
         }
