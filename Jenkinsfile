@@ -1,19 +1,22 @@
 pipeline {
-    agent { label "Jenkins-Agent" }
+    agent 
+       agent any
     environment {
-              APP_NAME = "register-app-pipeline"
+               APP_NAME = "test"
     }
 
     stages {
         stage("Cleanup Workspace") {
             steps {
-                cleanWs()
+//                cleanWs()
+                  deleteDir()
             }
         }
 
         stage("Checkout from SCM") {
                steps {
-                   git branch: 'main', credentialsId: 'github', url: 'https://github.com/Ashfaque-9x/gitops-register-app'
+                   git branch: 'test-cd', credentialsId: 'git-hub', url: 'https://github.com/DEL-ORG/s7auriole-revive.git'
+                    }
                }
         }
 
@@ -21,7 +24,7 @@ pipeline {
             steps {
                 sh """
                    cat deployment.yaml
-                   sed -i 's/${APP_NAME}.*/${APP_NAME}:${IMAGE_TAG}/g' deployment.yaml
+                   sed -i 's/${APP_NAME}.*/${APP_NAME}_${IMAGE_TAG}/g' deployment.yaml
                    cat deployment.yaml
                 """
             }
@@ -30,13 +33,14 @@ pipeline {
         stage("Push the changed deployment file to Git") {
             steps {
                 sh """
-                   git config --global user.name "Ashfaque-9x"
-                   git config --global user.email "ashfaque.s510@gmail.com"
+                   git config --global user.name "s7testar"
+                   git config --global user.email "attamegnon@gmail.com"
+                   git pull --all
                    git add deployment.yaml
                    git commit -m "Updated Deployment Manifest"
                 """
-                withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
-                  sh "git push https://github.com/Ashfaque-9x/gitops-register-app main"
+                withCredentials([gitUsernamePassword(credentialsId: 'git-hub', gitToolName: 'Default')]) {
+                  sh "git push https://github.com/DEL-ORG/s7auriole-revive.git test-cd"
                 }
             }
         }
